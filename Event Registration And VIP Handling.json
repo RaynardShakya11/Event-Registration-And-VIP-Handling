@@ -1,0 +1,418 @@
+{
+  "name": "Event Registration And VIP Handling",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Event Registration ",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Attendee Name: "
+            },
+            {
+              "fieldLabel": "Email: ",
+              "fieldType": "email"
+            },
+            {
+              "fieldLabel": "Ticket Type: ",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "General"
+                  },
+                  {
+                    "option": "VIP"
+                  },
+                  {
+                    "option": "Speaker"
+                  },
+                  {
+                    "option": "Sponsor"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Dietary Requirements"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -288,
+        -16
+      ],
+      "id": "1ac659b2-3dda-45ea-bb46-b5d6d179a6a2",
+      "name": "On form submission",
+      "webhookId": "eed67996-f558-4ddd-83d9-ef14d1b84882"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "ce1eb914-0221-4789-83d3-5a7a4067102b",
+                    "leftValue": "={{ $json['Ticket Type: '] }}",
+                    "rightValue": "VIP",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "f20e1d2b-a026-4ce6-9d64-7cc626671a55",
+                    "leftValue": "={{ $json['Ticket Type: '] }}",
+                    "rightValue": "General",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -64,
+        -16
+      ],
+      "id": "036c8429-20dd-4937-b084-4c1625021c1b",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1jGcUhIfONooZX3l54DWAB8g5yuQrkU8MpKzK8q4ucXo/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jGcUhIfONooZX3l54DWAB8g5yuQrkU8MpKzK8q4ucXo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Attendee Name: ": "={{ $('On form submission').item.json['Attendee Name: '] }}",
+            "Email: ": "={{ $('On form submission').item.json['Email: '] }}",
+            "Ticket Type: ": "={{ $('On form submission').item.json['Ticket Type: '] }}",
+            "Dietary Requirements: ": "={{ $('On form submission').item.json['Dietary Requirements'] }}",
+            "Decision:": "VIP "
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Attendee Name: ",
+              "displayName": "Attendee Name: ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email: ",
+              "displayName": "Email: ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Ticket Type: ",
+              "displayName": "Ticket Type: ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Dietary Requirements: ",
+              "displayName": "Dietary Requirements: ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Decision:",
+              "displayName": "Decision:",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        384,
+        -96
+      ],
+      "id": "e24237a0-26c2-4cda-bc72-50de5d6dd270",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "1V3qmuoGmctwSxEv",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1jGcUhIfONooZX3l54DWAB8g5yuQrkU8MpKzK8q4ucXo/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jGcUhIfONooZX3l54DWAB8g5yuQrkU8MpKzK8q4ucXo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Attendee Name: ": "={{ $('On form submission').item.json['Attendee Name: '] }}",
+            "Email: ": "={{ $('On form submission').item.json['Email: '] }}",
+            "Ticket Type: ": "={{ $('On form submission').item.json['Ticket Type: '] }}",
+            "Dietary Requirements: ": "={{ $('On form submission').item.json['Dietary Requirements'] }}",
+            "Decision:": "General "
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Attendee Name: ",
+              "displayName": "Attendee Name: ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email: ",
+              "displayName": "Email: ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Ticket Type: ",
+              "displayName": "Ticket Type: ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Dietary Requirements: ",
+              "displayName": "Dietary Requirements: ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Decision:",
+              "displayName": "Decision:",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        384,
+        80
+      ],
+      "id": "cdd241d0-7bf7-42a9-b4e2-db6afc6e942f",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "1V3qmuoGmctwSxEv",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json['Email: '] }}",
+        "subject": "=VIP Access Confirmed: Welcome to the Event, {{ $json[\"Attendee Name\"] }}!",
+        "emailType": "text",
+        "message": "=Hi {{ $json[\"Attendee Name\"] }},  \nThank you for registering as a {{ $json[\"Ticket Type\"] }} for the Event! \nYour VIP Registration Details: -\nName: {{ $json[\"Attendee Name\"] }} -  \nTicket Tier: {{ $json[\"Ticket Type\"] }} - VIP \n\nLounge Access Code: VIP-LOUNGE-2026  \n\nAs a VIP guest, you have access to the exclusive networking suite and priority seating. If you have any questions regarding your dietary requests ({{ $json[\"Dietary Requirements\"] }}), our concierge team will assist you at check-in.  Best regards, The Event Team",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        160,
+        -96
+      ],
+      "id": "ed0d65c0-dcd3-4e64-9fa0-5f646eb022b2",
+      "name": "Send Message to VIP",
+      "webhookId": "f08d91b1-7dbc-45d4-9158-b2cb66101cc0",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "hiKznwGpBtmQygOL",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json['Email: '] }}",
+        "subject": "VIP Access Confirmed: Welcome to the E{{ $json['Attendee Name: '] }}vent, ",
+        "emailType": "text",
+        "message": "=Hi {{ $json['Attendee Name: '] }},  Thank you for registering as a  {{ $json['Ticket Type: '] }}for the Event!  Your VIP Registration Details:\n- Name:   {{ $json['Attendee Name: '] }}\n- Ticket Tier: {{ $json['Ticket Type: '] }}\n- VIP Lounge Access Code: VIP-LOUNGE-2026  \n\nAs a VIP guest, you have access to the exclusive networking suite and priority seating. If you have any questions regarding your dietary requests ({{ $json[\"Dietary Requirements\"] }}), our concierge team will assist you at check-in.  Best regards, The Event Team",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        160,
+        64
+      ],
+      "id": "f6cdb553-739e-4632-a654-4012942a1433",
+      "name": "Send Message to General",
+      "webhookId": "f08d91b1-7dbc-45d4-9158-b2cb66101cc0",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "hiKznwGpBtmQygOL",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Send Message to VIP",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Message to General",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Message to VIP": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Message to General": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "7d5f7cf4-af9b-4b64-ba97-e8b5a67f9085",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "18b0d23652249ec24cfc2bf95e77954c947048e44c9bec1faa5f7e50ecfb025f"
+  },
+  "nodeGroups": [],
+  "id": "icHREzEdAZDgxKFY",
+  "tags": []
+}
